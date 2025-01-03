@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Prism</string>
+
+    <string name="manage_wallpaper_cta">Change wallpaper</string>
+    <string name="manage_permissions_cta_title">Manage permissions</string>
+    <string name="manage_permissions_cta_description">Prism requires additional permissions to access your wallpaper</string>
+
+    <string name="permissions_enable_storage_title">Allow wallpaper access</string>
+    <string name="permissions_enable_storage_description">Grant permissions required to access the wallpaper</string>
+
+    <string name="permissions_third_party_title">Third-party access</string>
+    <string name="permissions_third_party_description">Manage apps which can request access to your wallpaper</string>
+</resources>
