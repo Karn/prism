@@ -23,13 +23,21 @@ android {
 
     buildTypes {
         release {
+            // Enables code shrinking, obfuscation, and optimization.
             isMinifyEnabled = true
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
             isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // To publish on the Play store a private signing key is required, but to allow anyone
+            // who clones the code to sign and run the release variant, use the debug signing key.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
