@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Prism</string>
 
+    <string name="wallpaper_type_lockscreen">Lockscreen</string>
+    <string name="wallpaper_type_homescreen">Homescreen</string>
+
     <string name="manage_wallpaper_cta">Change wallpaper</string>
     <string name="manage_permissions_cta_title">Manage permissions</string>
     <string name="manage_permissions_cta_description">Prism requires additional permissions to access your wallpaper</string>

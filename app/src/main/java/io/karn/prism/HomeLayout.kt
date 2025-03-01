@@ -80,7 +80,7 @@ fun HomeLayout(
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Lockscreen",
+                        text = stringResource(R.string.wallpaper_type_lockscreen),
                     )
                 }
 
@@ -106,7 +106,7 @@ fun HomeLayout(
 
                     Text(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = "Homescreen",
+                        text = stringResource(R.string.wallpaper_type_homescreen),
                     )
                 }
             }

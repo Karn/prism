@@ -7,12 +7,15 @@ import android.content.Intent
 import android.content.UriMatcher
 import android.database.Cursor
 import android.database.MatrixCursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.BaseColumns
+import androidx.core.graphics.drawable.toBitmap
 import io.karn.prism.MainApplication
 import io.karn.prism.data.thirdparty.ThirdPartyAppsRepository
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 
 /**
@@ -199,7 +202,9 @@ class WallpaperContentProvider : ContentProvider() {
 
         val (id, pfd) = try {
             val id = wallpaperManager.getWallpaperId(type)
-            val pfd = wallpaperManager.getWallpaperFile(type)
+            val pfd = wallpaperManager.getWallpaperFile(type) ?: id.takeIf { it > 0 }?.let {
+                getDefaultWallpaperParcelFileDescriptor(type)
+            }
 
             id to pfd
         } catch (e: SecurityException) {
@@ -209,5 +214,28 @@ class WallpaperContentProvider : ContentProvider() {
         }
 
         return Data(type, id, pfd)
+    }
+
+    private fun getDefaultWallpaperParcelFileDescriptor(which: Int): ParcelFileDescriptor? {
+        val wallpaperPath = File(context?.dataDir, "wallpaper_cache")
+
+        // Open FD and return
+        if (wallpaperPath.exists()) {
+            return ParcelFileDescriptor.open(wallpaperPath, ParcelFileDescriptor.MODE_READ_ONLY)
+        }
+
+        // Write wallpaper to cache
+        val defaultWallpaper = wallpaperManager.getBuiltInDrawable(WallpaperManager.FLAG_SYSTEM)
+        val defaultWallpaperBitmap = defaultWallpaper.toBitmap()
+        try {
+            wallpaperPath.outputStream().use {
+                defaultWallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            }
+        } catch (e: Exception) {
+            // Nothing to do
+            return null
+        }
+
+        return ParcelFileDescriptor.open(wallpaperPath, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 }
