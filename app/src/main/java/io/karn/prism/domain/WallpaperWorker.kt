@@ -9,10 +9,10 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import io.karn.prism.data.wallpaper.WallpaperContentProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
-import io.karn.prism.data.wallpaper.WallpaperContentProvider
 import java.io.File
 
 class WallpaperWorker(

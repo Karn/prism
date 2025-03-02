@@ -153,9 +153,6 @@ class WallpaperContentProvider : ContentProvider() {
     }
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? = runBlocking {
-        if (callingPackage != context?.packageName) {
-            return@runBlocking null
-        }
         if (!verifyAccessForPackage(callingPackage)) {
             return@runBlocking null
         }

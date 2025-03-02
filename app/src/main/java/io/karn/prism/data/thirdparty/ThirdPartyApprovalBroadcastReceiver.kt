@@ -2,7 +2,6 @@ package io.karn.prism.data.thirdparty
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.impl.utils.ForceStopRunnable.BroadcastReceiver
 import io.karn.prism.MainApplication
