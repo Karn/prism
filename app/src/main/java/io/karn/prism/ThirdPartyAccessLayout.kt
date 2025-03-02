@@ -23,7 +23,7 @@ import io.karn.prism.ui.theme.checkBoxDefaults
 fun ThirdPartyAccessLayout(
     modifier: Modifier = Modifier,
     state: MainViewModel.State,
-    toggleThirdPartyAccess: (packageName: String) -> Unit,
+    toggleThirdPartyAccess: (packageName: String, allowed: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     Column(modifier = modifier) {
@@ -60,7 +60,7 @@ fun ThirdPartyAccessLayout(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .clip(MaterialTheme.shapes.small)
-                            .clickable(onClick = { toggleThirdPartyAccess(app) })
+                            .clickable(onClick = { toggleThirdPartyAccess(app, !isEnabled) })
                             .padding(horizontal = 8.dp),
                         title = buildAnnotatedString {
                             if (index != data.lastIndex) {

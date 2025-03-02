@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor
 import android.provider.BaseColumns
 import androidx.core.graphics.drawable.toBitmap
 import io.karn.prism.MainApplication
+import io.karn.prism.data.notifications.createNewRequestNotificationForPackage
 import io.karn.prism.data.thirdparty.ThirdPartyAppsRepository
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -190,6 +191,14 @@ class WallpaperContentProvider : ContentProvider() {
             accessedAt = System.currentTimeMillis()
         )
 
+        // First time requesting access throw up a notification
+        if (!resolvedPackage.allowedAccess && resolvedPackage.requestCount > 0) {
+            createNewRequestNotificationForPackage(
+                context = requireContext(),
+                callingPackage = callingPackage
+            )
+        }
+
         return resolvedPackage.allowedAccess
     }
 
@@ -203,7 +212,7 @@ class WallpaperContentProvider : ContentProvider() {
         val (id, pfd) = try {
             val id = wallpaperManager.getWallpaperId(type)
             val pfd = wallpaperManager.getWallpaperFile(type) ?: id.takeIf { it > 0 }?.let {
-                getDefaultWallpaperParcelFileDescriptor(type)
+                getDefaultWallpaperParcelFileDescriptor()
             }
 
             id to pfd
@@ -216,7 +225,7 @@ class WallpaperContentProvider : ContentProvider() {
         return Data(type, id, pfd)
     }
 
-    private fun getDefaultWallpaperParcelFileDescriptor(which: Int): ParcelFileDescriptor? {
+    private fun getDefaultWallpaperParcelFileDescriptor(): ParcelFileDescriptor? {
         val wallpaperPath = File(context?.dataDir, "wallpaper_cache")
 
         // Open FD and return
@@ -226,6 +235,7 @@ class WallpaperContentProvider : ContentProvider() {
 
         // Write wallpaper to cache
         val defaultWallpaper = wallpaperManager.getBuiltInDrawable(WallpaperManager.FLAG_SYSTEM)
+            ?: return null
         val defaultWallpaperBitmap = defaultWallpaper.toBitmap()
         try {
             wallpaperPath.outputStream().use {

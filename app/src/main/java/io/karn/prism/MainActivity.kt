@@ -2,17 +2,15 @@ package io.karn.prism
 
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,6 +48,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -63,6 +62,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import coil.compose.rememberAsyncImagePainter
 import io.karn.prism.domain.WallpaperChangedBroadcastReceiver
 import io.karn.prism.ui.theme.PrismTheme
@@ -85,7 +85,21 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val systemBarStyle = when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_NO -> SystemBarStyle.light(
+                Color.Transparent.toArgb(),
+                Color.Transparent.toArgb()
+            )
+
+            Configuration.UI_MODE_NIGHT_YES -> SystemBarStyle.dark(Color.Transparent.toArgb())
+            else -> error("Illegal State, current mode is $currentNightMode")
+        }
+
+        enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle,
+        )
 
         setContent {
             PrismTheme {
@@ -98,6 +112,7 @@ class MainActivity : ComponentActivity() {
                     // Whenever the activity resumes, check the permissions to verify that the user
                     // still has access.
                     viewModel.validatePermissions()
+                    viewModel.syncWallpapers()
                 }
 
                 DisposableEffect(Unit) {
@@ -144,8 +159,14 @@ class MainActivity : ComponentActivity() {
                                         .padding(horizontal = 8.dp),
                                     contentAlignment = Alignment.CenterStart,
                                 ) {
+                                    val title =
+                                        when (currentNavigationDestination?.destination?.route) {
+                                            "permissions" -> stringResource(R.string.manage_permissions_cta_title)
+                                            "3rdparty" -> stringResource(R.string.permissions_third_party_title)
+                                            else -> stringResource(R.string.app_name)
+                                        }
                                     Text(
-                                        text = stringResource(R.string.app_name),
+                                        text = title,
                                         color = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
@@ -167,31 +188,24 @@ class MainActivity : ComponentActivity() {
                                         )
                                         .clip(RoundedCornerShape(6.dp))
                                 ) {
-                                    AnimatedContent(
-                                        targetState = currentNavigationDestination?.destination?.route,
-                                        transitionSpec = {
-                                            fadeIn(animationSpec = tween(220, delayMillis = 0))
-                                                .togetherWith(fadeOut(animationSpec = tween(90)))
-                                        }
-                                    ) { route ->
-                                        val icon = when (route) {
+                                    val icon =
+                                        when (currentNavigationDestination?.destination?.route) {
                                             "home" -> R.drawable.ic_logo
                                             else -> com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_chevron_left_16_regular
                                         }
 
-                                        Image(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clickable(enabled = icon != R.drawable.ic_logo) {
-                                                    navController.popBackStack()
-                                                }
-                                                .padding(4.dp),
-                                            painter = rememberAsyncImagePainter(icon),
-                                            contentDescription = stringResource(R.string.app_name),
-                                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                                            contentScale = ContentScale.Fit,
-                                        )
-                                    }
+                                    Image(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clickable(enabled = icon != R.drawable.ic_logo) {
+                                                navController.popBackStack()
+                                            }
+                                            .padding(4.dp),
+                                        painter = rememberAsyncImagePainter(icon),
+                                        contentDescription = stringResource(R.string.app_name),
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                        contentScale = ContentScale.Fit,
+                                    )
                                 }
                             }
 
@@ -234,11 +248,16 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable("3rdparty") {
+                            composable(
+                                route = "3rdparty",
+                                deepLinks = listOf(
+                                    navDeepLink { uriPattern = "prism://3rdparty" }
+                                )
+                            ) {
                                 ThirdPartyAccessLayout(
                                     modifier = Modifier,
                                     state = uiState,
-                                    toggleThirdPartyAccess = viewModel::toggleThirdPartyAccess,
+                                    toggleThirdPartyAccess = viewModel::updateThirdPartyAccess,
                                 )
                             }
                         }

@@ -16,11 +16,15 @@ import io.karn.prism.data.wallpaper.WallpaperRepository
 import io.karn.prism.model.PermissionsModel
 import io.karn.prism.model.WallpapersModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -76,17 +80,20 @@ class MainViewModel(
 
     private val viewModelWorkerScope = viewModelScope + Dispatchers.IO.limitedParallelism(1)
 
+    private val manualSyncChannel = Channel<Unit>(Channel.CONFLATED)
+
     init {
         // As part of the initialization, listen to changes to the wallpaper and fetch the latest
         // wallpaper URIs.
-        wallpaperChangeListener.listener
-            .onStart { emit(Unit) }
-            .onEach {
-                val wallpapers = wallpaperRepository.getWallpapers()
 
-                _state.update { it.copy(wallpapers = wallpapers) }
-            }
-            .launchIn(viewModelWorkerScope)
+        merge(
+            wallpaperChangeListener.listener,
+            manualSyncChannel.receiveAsFlow()
+        ).conflate().map {
+            val wallpapers = wallpaperRepository.getWallpapers()
+
+            _state.update { it.copy(wallpapers = wallpapers) }
+        }.launchIn(viewModelWorkerScope)
 
         // Load the list of third-party apps
         thirdPartyAppsRepository.getAll()
@@ -107,9 +114,13 @@ class MainViewModel(
         }
     }
 
+    fun syncWallpapers() = viewModelWorkerScope.launch {
+        manualSyncChannel.trySend(Unit)
+    }
+
     // TODO(karn): Switch to a suspend function that allows call site to manage button
     //  enabled/disabled state.
-    fun toggleThirdPartyAccess(packageName: String) = viewModelScope.launch {
-        thirdPartyAppsRepository.toggleAccess(packageName)
+    fun updateThirdPartyAccess(packageName: String, enabled: Boolean) = viewModelScope.launch {
+        thirdPartyAppsRepository.updateAccess(packageName, enabled)
     }
 }

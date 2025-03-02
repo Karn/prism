@@ -28,9 +28,9 @@ class ThirdPartyAppsRepository(
         return updated
     }
 
-    suspend fun toggleAccess(packageName: String) {
+    suspend fun updateAccess(packageName: String, enabled: Boolean) {
         val current = dao.getByPackageName(packageName) ?: return
-        val updated = current.copy(allowedAccess = !current.allowedAccess)
+        val updated = current.copy(allowedAccess = enabled)
 
         dao.insert(updated)
     }
