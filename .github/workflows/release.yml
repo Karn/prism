@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'workflow_dispatch' || (github.event.action == 'push' && startsWith(github.event.head_commit.message, 'Version bump:')) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Version bump:')) }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
