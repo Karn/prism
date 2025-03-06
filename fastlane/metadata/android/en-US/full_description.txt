@@ -1,0 +1,5 @@
+A wallpaper manager for API33+ built to allow wallpaper retrieval by allowlisted third-party apps.
+
+‣ Manage Wallpaper — Preview and update your your current system wallpaper.
+‣ Open source, privacy focused — Prism is not connected to the internet.
+‣ Enable restricted third-party access — Allow certain apps, such as launchers or backup tools to access your Wallpaper through granular controls.

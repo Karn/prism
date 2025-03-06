@@ -1,0 +1,1 @@
+A wallpaper manager for API33+ with wallpaper retrieval by allowlisted 3rd apps
