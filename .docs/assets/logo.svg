@@ -1,3 +1,21 @@
+<!--
+  - Prism - Wallpaper Manager
+  - Copyright (C) 2025 Karn Saheb
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="none" viewBox="0 0 48 48">
     <path fill="#000" fill-rule="evenodd"
         d="M17.478 41.67c.334.33.84.422 1.272.233L39.32 32.87c.308-.135.54-.397.634-.717.094-.32.04-.664-.147-.94l-16-23.71a1.147 1.147 0 0 0-.99-.502 1.145 1.145 0 0 0-.953.568L8.15 31.279c-.256.442-.18.998.184 1.358l9.143 9.032Zm-.01-3.204-6.9-6.816 10.35-17.892-3.45 24.708Zm6.11-27.234 13.576 20.119-17.456 7.664 3.88-27.783Z"
