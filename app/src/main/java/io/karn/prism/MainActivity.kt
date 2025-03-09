@@ -73,6 +73,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -102,7 +103,11 @@ class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel> { MainViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        actionBar?.hide()
+
         super.onCreate(savedInstanceState)
+
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val systemBarStyle = when (currentNightMode) {
             Configuration.UI_MODE_NIGHT_NO -> SystemBarStyle.light(

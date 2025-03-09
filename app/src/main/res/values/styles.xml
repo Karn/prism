@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Prism - Wallpaper Manager
   ~ Copyright (C) 2025 Karn Saheb
   ~
@@ -19,5 +18,17 @@
 
 <resources>
 
-    <style name="Theme.Prism" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="SplashScreen" parent="Theme.SplashScreen">
+        <item name="android:windowBackground">?attr/android:colorBackground</item>
+        <item name="windowSplashScreenBackground">?attr/android:colorBackground</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground_material</item>
+
+        <item name="postSplashScreenTheme">@style/Prism</item>
+    </style>
+
+
+    <style name="Prism" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">?attr/android:colorBackground</item>
+    </style>
 </resources>
